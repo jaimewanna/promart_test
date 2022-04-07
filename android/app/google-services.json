@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "202579812655",
+    "project_id": "promart-test-273fd",
+    "storage_bucket": "promart-test-273fd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:202579812655:android:f6d16b0497aade080401da",
+        "android_client_info": {
+          "package_name": "com.example.promart_test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "202579812655-bdlmqiidvgvnedfm18l9q23ro0semt2h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDagCB_3JircKqx9xN23QXCjKwIOJAuswk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "202579812655-bdlmqiidvgvnedfm18l9q23ro0semt2h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
