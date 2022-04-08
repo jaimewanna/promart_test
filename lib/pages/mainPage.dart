@@ -16,12 +16,61 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: getPrimaryColor(),
-        onPressed: () {},
-        child: const Icon(Icons.add),
-      ),
-      appBar: AppBar(title: const Text("Lista Pro Mart")),
-    );
+        appBar: AppBar(
+            title: const Text("Lista de Productos"),
+            backgroundColor: getPrimaryColor(),
+            actions: <Widget>[
+              IconButton(
+                icon: const Icon(
+                  Icons.logout,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  // do something
+                },
+              )
+            ]),
+        body: SizedBox(
+          height: MediaQuery.of(context).size.height - 214,
+          width: MediaQuery.of(context).size.width,
+          child: StreamBuilder<QuerySnapshot>(
+              stream: Firestore.instance.collection('productos').snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Text('Cargando...');
+                }
+                if (snapshot.connectionState == ConnectionState.active) {
+                  return ListView(children: getExpenseItems(snapshot));
+                }
+                return const Text("loading...");
+              }),
+        ));
+  }
+
+  getExpenseItems(AsyncSnapshot<QuerySnapshot> snapshot) {
+    return snapshot.data!.documents
+        .map((doc) => ListTile(
+              title: Text(doc["nombre"]),
+              subtitle: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(doc["descripcion"]),
+                  Text(doc["imagen"],
+                      style: const TextStyle(color: Colors.blueAccent)),
+                ],
+              ),
+              trailing: doc["favorito"] == true
+                  ? const Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                    )
+                  : const Icon(Icons.star_border),
+            ))
+        .toList();
   }
 }

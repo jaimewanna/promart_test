@@ -1,9 +1,12 @@
 // ignore_for_file: file_names
 
+import 'dart:ffi';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:promart_test/pages/mainPage.dart';
 import 'package:promart_test/providers/globals.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -13,6 +16,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   final _formKey = GlobalKey<FormState>();
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
@@ -21,6 +25,22 @@ class _LoginPageState extends State<LoginPage> {
     borderRadius: BorderRadius.circular(25.0),
     borderSide: BorderSide(color: getPrimaryColor(), width: 5),
   );
+
+  Future<void> getSharedPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool? looged = false;
+    looged = prefs.getBool("logged") ?? false;
+    if (looged == true) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => MainPage()));
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getSharedPrefs();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +134,8 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email.text, password: password.text);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool('logged', true);
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => MainPage()));
     } on AuthException catch (e) {
