@@ -1,4 +1,7 @@
-// ignore_for_file: file_names, prefer_const_constructors_in_immutables
+// ignore_for_file: file_names
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:promart_test/pages/mainPage.dart';
 import 'package:promart_test/providers/globals.dart';
 import 'package:flutter/material.dart';
 
@@ -42,6 +45,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: CircularProgressIndicator(),
                   );
                 });
+            signIn();
           }
         },
       ),
@@ -104,5 +108,20 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  Future<void> signIn() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email.text, password: password.text);
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => MainPage()));
+    } on AuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      }
+    }
   }
 }
