@@ -3,7 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:promart_test/pages/addProductPage.dart';
+import 'package:promart_test/pages/loginPage.dart';
 import 'package:promart_test/providers/globals.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key? key}) : super(key: key);
@@ -25,11 +28,28 @@ class _MainPageState extends State<MainPage> {
                   Icons.logout,
                   color: Colors.white,
                 ),
-                onPressed: () {
-                  // do something
+                onPressed: () async {
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  prefs.setBool('logged', false);
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                    (Route<dynamic> route) => false,
+                  );
                 },
               )
             ]),
+        floatingActionButton: FloatingActionButton(
+            backgroundColor: getPrimaryColor(),
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => AddProductage()));
+            },
+            child: const Icon(
+              Icons.add,
+              color: Colors.white,
+            )),
         body: SizedBox(
           height: MediaQuery.of(context).size.height - 214,
           width: MediaQuery.of(context).size.width,
@@ -65,12 +85,33 @@ class _MainPageState extends State<MainPage> {
                 ],
               ),
               trailing: doc["favorito"] == true
-                  ? const Icon(
-                      Icons.star,
-                      color: Colors.amber,
+                  ? GestureDetector(
+                      onTap: () {
+                        print(doc.documentID);
+                        addUser(doc.documentID, false);
+                      },
+                      child: const Icon(
+                        Icons.star,
+                        color: Colors.amber,
+                      ),
                     )
-                  : const Icon(Icons.star_border),
+                  : GestureDetector(
+                      onTap: () {
+                        print(doc.documentID);
+                        addUser(doc.documentID, true);
+                      },
+                      child: const Icon(Icons.star_border)),
             ))
         .toList();
+  }
+
+  Future<void> addUser(uid, valor) {
+    CollectionReference products = Firestore.instance.collection('productos');
+
+    return products.document(uid).updateData({"favorito": valor}).then(
+      (value) {
+        setState(() {});
+      },
+    ).catchError((error) => print("Failed to update user: $error"));
   }
 }
